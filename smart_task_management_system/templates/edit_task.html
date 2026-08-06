@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Edit entry - Smart Task Management System{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <p class="auth-card__eyebrow">Entry #{{ '%03d'|format(task.id) }}</p>
+    <h1 class="auth-card__title">Edit entry</h1>
+
+    <form method="POST" action="{{ url_for('edit_task', task_id=task.id) }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-field">
+            <label class="form-field__label" for="title">Title</label>
+            <input class="form-field__input" type="text" id="title" name="title" value="{{ task.title }}" required maxlength="200" autofocus>
+        </div>
+
+        <div class="form-field">
+            <label class="form-field__label" for="description">Description</label>
+            <textarea class="form-field__input form-field__input--textarea" id="description" name="description" rows="3">{{ task.description or '' }}</textarea>
+        </div>
+
+        <div class="form-field-row">
+            <div class="form-field">
+                <label class="form-field__label" for="due_date">Due date</label>
+                <input class="form-field__input" type="date" id="due_date" name="due_date" value="{{ task.due_date.isoformat() if task.due_date else '' }}">
+            </div>
+
+            <div class="form-field">
+                <label class="form-field__label" for="priority">Priority</label>
+                <select class="form-field__input" id="priority" name="priority">
+                    <option value="Low" {{ 'selected' if task.priority == 'Low' }}>Low</option>
+                    <option value="Medium" {{ 'selected' if task.priority == 'Medium' }}>Medium</option>
+                    <option value="High" {{ 'selected' if task.priority == 'High' }}>High</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary" type="submit">Save changes</button>
+            <a class="btn btn--ghost" href="{{ url_for('dashboard') }}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Smart Task Management System{% endblock %}
+
+{% macro task_row(task, index, stamp_class, stamp_label) %}
+<li class="ledger-row">
+    <span class="ledger-row__index">{{ '%03d'|format(index) }}</span>
+    <div class="ledger-row__body">
+        <p class="ledger-row__title">{{ task.title }}</p>
+        {% if task.description %}<p class="ledger-row__desc">{{ task.description }}</p>{% endif %}
+        <p class="ledger-row__meta">
+            {% if task.due_date %}
+                <span class="ledger-row__due">{{ task.due_date.strftime('%d %b %Y') }}</span>
+            {% else %}
+                <span class="ledger-row__due ledger-row__due--none">No due date</span>
+            {% endif %}
+            <span class="ledger-row__priority ledger-row__priority--{{ task.priority|lower }}">{{ task.priority }}</span>
+        </p>
+    </div>
+    <span class="stamp stamp--{{ stamp_class }}">{{ stamp_label }}</span>
+    <div class="ledger-row__actions">
+        <form method="POST" action="{{ url_for('toggle_task', task_id=task.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="icon-btn" type="submit" title="{{ 'Mark as pending' if task.status == 'Completed' else 'Mark as complete' }}">{{ '↺' if task.status == 'Completed' else '✓' }}</button>
+        </form>
+        <a class="icon-btn" href="{{ url_for('edit_task', task_id=task.id) }}" title="Edit">✎</a>
+        <form method="POST" action="{{ url_for('delete_task', task_id=task.id) }}" class="js-confirm-delete">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="icon-btn icon-btn--danger" type="submit" title="Delete">✕</button>
+        </form>
+    </div>
+</li>
+{% endmacro %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div>
+        <p class="dashboard-header__eyebrow">{{ today.strftime('%A, %d %B %Y') }}</p>
+        <h1 class="dashboard-header__title">Today's Log</h1>
+    </div>
+    <div class="stat-row">
+        <span class="stat-chip stat-chip--overdue">{{ counts.overdue }} <em>Overdue</em></span>
+        <span class="stat-chip stat-chip--due-today">{{ counts.due_today }} <em>Due today</em></span>
+        <span class="stat-chip stat-chip--upcoming">{{ counts.upcoming }} <em>Upcoming</em></span>
+        <span class="stat-chip stat-chip--completed">{{ counts.completed }} <em>Done</em></span>
+    </div>
+</div>
+
+<form class="quick-add" method="POST" action="{{ url_for('add_task') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input class="quick-add__title" type="text" name="title" placeholder="Add a new entry..." required maxlength="200">
+    <input class="quick-add__date" type="date" name="due_date">
+    <select class="quick-add__priority" name="priority">
+        <option value="Low">Low</option>
+        <option value="Medium" selected>Medium</option>
+        <option value="High">High</option>
+    </select>
+    <button class="btn btn--primary" type="submit">Add</button>
+</form>
+
+{% set total = counts.overdue + counts.due_today + counts.upcoming + counts.completed %}
+{% if total == 0 %}
+<p class="empty-state">The log is empty. Add your first entry above to get started.</p>
+{% endif %}
+
+{% if buckets.overdue %}
+<section class="ledger-section">
+    <p class="ledger-section__label ledger-section__label--overdue">Overdue &middot; {{ counts.overdue }}</p>
+    <ul class="ledger-list">
+        {% for task in buckets.overdue %}{{ task_row(task, loop.index, 'overdue', 'OVERDUE') }}{% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if buckets.due_today %}
+<section class="ledger-section">
+    <p class="ledger-section__label ledger-section__label--due-today">Due Today &middot; {{ counts.due_today }}</p>
+    <ul class="ledger-list">
+        {% for task in buckets.due_today %}{{ task_row(task, loop.index, 'due-today', 'DUE TODAY') }}{% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if buckets.upcoming %}
+<section class="ledger-section">
+    <p class="ledger-section__label ledger-section__label--upcoming">Upcoming &middot; {{ counts.upcoming }}</p>
+    <ul class="ledger-list">
+        {% for task in buckets.upcoming %}{{ task_row(task, loop.index, 'upcoming', 'UPCOMING') }}{% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if buckets.completed %}
+<section class="ledger-section">
+    <p class="ledger-section__label ledger-section__label--completed">Completed &middot; {{ counts.completed }}</p>
+    <ul class="ledger-list">
+        {% for task in buckets.completed %}{{ task_row(task, loop.index, 'completed', 'DONE') }}{% endfor %}
+    </ul>
+</section>
+{% endif %}
+{% endblock %}

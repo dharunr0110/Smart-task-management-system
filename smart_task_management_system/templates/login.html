@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Log in - Smart Task Management System{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <p class="auth-card__eyebrow">Welcome back</p>
+    <h1 class="auth-card__title">Log in</h1>
+
+    <form method="POST" action="{{ url_for('login') }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-field">
+            <label class="form-field__label" for="username">Username</label>
+            <input class="form-field__input" type="text" id="username" name="username" autocomplete="username" required autofocus>
+        </div>
+
+        <div class="form-field">
+            <label class="form-field__label" for="password">Password</label>
+            <input class="form-field__input" type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+
+        <button class="btn btn--primary btn--block" type="submit">Log in</button>
+    </form>
+
+    <p class="auth-card__footer">New here? <a href="{{ url_for('signup') }}">Create an account</a></p>
+</div>
+{% endblock %}

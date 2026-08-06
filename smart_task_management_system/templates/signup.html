@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Create account - Smart Task Management System{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <p class="auth-card__eyebrow">Get started</p>
+    <h1 class="auth-card__title">Create your account</h1>
+
+    <form method="POST" action="{{ url_for('signup') }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-field">
+            <label class="form-field__label" for="username">Username</label>
+            <input class="form-field__input" type="text" id="username" name="username" value="{{ username }}" autocomplete="username" required autofocus minlength="3">
+        </div>
+
+        <div class="form-field">
+            <label class="form-field__label" for="email">Email</label>
+            <input class="form-field__input" type="email" id="email" name="email" value="{{ email }}" autocomplete="email" required>
+        </div>
+
+        <div class="form-field">
+            <label class="form-field__label" for="password">Password</label>
+            <input class="form-field__input" type="password" id="password" name="password" autocomplete="new-password" required minlength="6">
+            <p class="form-field__hint">At least 6 characters.</p>
+        </div>
+
+        <div class="form-field">
+            <label class="form-field__label" for="confirm_password">Confirm password</label>
+            <input class="form-field__input" type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required minlength="6">
+        </div>
+
+        <button class="btn btn--primary btn--block" type="submit">Create account</button>
+    </form>
+
+    <p class="auth-card__footer">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+</div>
+{% endblock %}

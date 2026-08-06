@@ -1,0 +1,585 @@
+/* ---------------------------------------------------------------------
+   Smart Task Management System - "Field Log" design system
+   Ink + paper ledger aesthetic: entries are logged, stamped, and tracked.
+   ------------------------------------------------------------------- */
+
+:root {
+    --ink: #1B2430;
+    --ink-soft: #2A3644;
+    --paper: #F3F1EA;
+    --paper-raised: #FFFFFF;
+    --text: #20242B;
+    --text-muted: #666B76;
+    --border: #DAD6C8;
+    --border-on-ink: #3A4756;
+
+    --brass: #B8842B;
+    --brass-dark: #96690E;
+    --pine: #2F6B4F;
+    --pine-bg: #E8F0EA;
+    --oxide: #A63D34;
+    --oxide-bg: #F5E8E6;
+    --steel: #3B5B73;
+    --steel-bg: #E7EDF1;
+    --amber-bg: #F7ECD9;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+    --radius: 3px;
+    --shadow-card: 0 1px 2px rgba(27, 36, 48, 0.06), 0 8px 24px rgba(27, 36, 48, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--steel);
+}
+
+:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+    }
+}
+
+/* ------------------------------ Topbar -------------------------------- */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px 28px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.topbar__wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: 0.01em;
+    color: var(--paper);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar__mark {
+    color: var(--brass);
+    font-size: 12px;
+}
+
+.topbar__user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+}
+
+.topbar__username {
+    color: #C7CCD4;
+}
+
+.topbar__username::before {
+    content: '@';
+    color: #6C7686;
+}
+
+.topbar__logout {
+    color: var(--paper);
+    text-decoration: none;
+    border: 1px solid var(--border-on-ink);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.topbar__logout:hover {
+    border-color: var(--brass);
+    color: var(--brass);
+}
+
+/* ------------------------------- Page ---------------------------------- */
+
+.page {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+}
+
+/* ------------------------------ Flash ---------------------------------- */
+
+.flash-stack {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.flash {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    border: 1px solid transparent;
+}
+
+.flash--success {
+    background: var(--pine-bg);
+    color: var(--pine);
+    border-color: #C4DBCB;
+}
+
+.flash--error {
+    background: var(--oxide-bg);
+    color: var(--oxide);
+    border-color: #E3C4C0;
+}
+
+/* ----------------------------- Auth card -------------------------------- */
+
+.auth-card {
+    max-width: 420px;
+    margin: 24px auto;
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: var(--shadow-card);
+    padding: 40px 36px;
+}
+
+.auth-card__eyebrow {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--brass-dark);
+    margin: 0 0 6px;
+}
+
+.auth-card__title {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0 0 26px;
+    color: var(--ink);
+}
+
+.auth-card__footer {
+    margin: 22px 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* ----------------------------- Form fields ------------------------------ */
+
+.form-field {
+    margin-bottom: 18px;
+}
+
+.form-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-field__label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.form-field__input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text);
+    transition: border-color 0.15s ease;
+}
+
+.form-field__input:focus {
+    border-color: var(--brass);
+}
+
+.form-field__input--textarea {
+    resize: vertical;
+    min-height: 70px;
+    font-family: var(--font-body);
+}
+
+.form-field__hint {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* -------------------------------- Buttons -------------------------------- */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: 11px 20px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn--primary {
+    background: var(--brass);
+    color: #fff;
+}
+
+.btn--primary:hover {
+    background: var(--brass-dark);
+}
+
+.btn--ghost {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.btn--ghost:hover {
+    border-color: var(--text-muted);
+}
+
+.btn--block {
+    display: flex;
+    width: 100%;
+}
+
+/* ---------------------------- Dashboard header ---------------------------- */
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.dashboard-header__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 4px;
+}
+
+.dashboard-header__title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+}
+
+.stat-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.stat-chip {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 11px;
+    border-radius: var(--radius);
+    display: inline-flex;
+    gap: 5px;
+    align-items: baseline;
+}
+
+.stat-chip em {
+    font-style: normal;
+    font-family: var(--font-body);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+}
+
+.stat-chip--overdue { background: var(--oxide-bg); color: var(--oxide); }
+.stat-chip--due-today { background: var(--amber-bg); color: var(--brass-dark); }
+.stat-chip--upcoming { background: var(--steel-bg); color: var(--steel); }
+.stat-chip--completed { background: var(--pine-bg); color: var(--pine); }
+
+/* ------------------------------- Quick add -------------------------------- */
+
+.quick-add {
+    display: flex;
+    gap: 10px;
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.quick-add__title {
+    flex: 1 1 220px;
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 8px 6px;
+    color: var(--text);
+    min-width: 160px;
+}
+
+.quick-add__title:focus {
+    outline: none;
+}
+
+.quick-add__date,
+.quick-add__priority {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--paper-raised);
+    color: var(--text);
+}
+
+/* ------------------------------ Ledger sections ---------------------------- */
+
+.ledger-section {
+    margin-bottom: 30px;
+}
+
+.ledger-section__label {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ledger-section__label--overdue { color: var(--oxide); }
+.ledger-section__label--due-today { color: var(--brass-dark); }
+.ledger-section__label--upcoming { color: var(--steel); }
+.ledger-section__label--completed { color: var(--pine); }
+
+.ledger-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ledger-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ledger-row:last-child {
+    border-bottom: none;
+}
+
+.ledger-row__index {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    padding-top: 3px;
+    flex-shrink: 0;
+}
+
+.ledger-row__body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ledger-row__title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    color: var(--text);
+    word-break: break-word;
+}
+
+.ledger-row__desc {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    word-break: break-word;
+}
+
+.ledger-row__meta {
+    margin: 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ledger-row__due {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.ledger-row__due--none {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+.ledger-row__priority {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+}
+
+.ledger-row__priority--low { background: var(--steel-bg); color: var(--steel); }
+.ledger-row__priority--medium { background: var(--amber-bg); color: var(--brass-dark); }
+.ledger-row__priority--high { background: var(--oxide-bg); color: var(--oxide); }
+
+/* Rubber-stamp status badge - the signature element */
+.stamp {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 5px 9px;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    transform: rotate(-1.5deg);
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.stamp--overdue { color: var(--oxide); }
+.stamp--due-today { color: var(--brass-dark); }
+.stamp--upcoming { color: var(--steel); }
+.stamp--completed { color: var(--pine); }
+
+.ledger-row__actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.ledger-row__actions form {
+    display: inline-flex;
+}
+
+.icon-btn {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    background: var(--paper-raised);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 13px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.icon-btn:hover {
+    border-color: var(--steel);
+    color: var(--steel);
+}
+
+.icon-btn--danger:hover {
+    border-color: var(--oxide);
+    color: var(--oxide);
+}
+
+/* ------------------------------- Empty state ------------------------------- */
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 60px 20px;
+    font-size: 15px;
+}
+
+/* --------------------------------- Mobile ---------------------------------- */
+
+@media (max-width: 640px) {
+    .page {
+        padding: 24px 16px 60px;
+    }
+
+    .auth-card {
+        padding: 28px 22px;
+    }
+
+    .form-field-row {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+    }
+
+    .ledger-row {
+        flex-wrap: wrap;
+    }
+
+    .ledger-row__actions {
+        margin-left: 40px;
+    }
+}
